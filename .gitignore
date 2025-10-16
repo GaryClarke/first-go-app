@@ -1,0 +1,28 @@
+# Go build and cache files
+/bin/
+/pkg/
+/*.exe
+/*.exe~
+/*.dll
+/*.so
+/*.dylib
+/*.test
+*.out
+
+# IDEs and editor files
+.idea/           # GoLand/JetBrains project config
+*.iml
+*.swp
+*.swo
+.vscode/
+
+# macOS system files
+.DS_Store
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Coverage and test files
+coverage.out
+
