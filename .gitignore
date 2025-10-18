@@ -28,6 +28,7 @@ coverage.out
 
 # Cursor AI development files
 CURSOR_RULES.md
+.cursorrules
 
 # Lesson text files
 lesson-texts/
