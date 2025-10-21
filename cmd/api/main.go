@@ -2,7 +2,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 )
 
@@ -26,5 +25,5 @@ func main() {
 // It takes a http.ResponseWriter to write the response,
 // and a *http.Request which contains all the request data.
 func healthcheckHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("hello, world")
+	w.Write([]byte("hello, world"))
 }
