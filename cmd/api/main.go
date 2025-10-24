@@ -2,6 +2,7 @@
 package main
 
 import (
+	"encoding/json"
 	"net/http"
 )
 
@@ -25,5 +26,12 @@ func main() {
 // It takes a http.ResponseWriter to write the response,
 // and a *http.Request which contains all the request data.
 func healthcheckHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("hello, world"))
+	// Tell the client that we're sending JSON back in the response
+	w.Header().Set("Content-Type", "application/json")
+
+	// Create a simple response object as a Go map
+	response := map[string]string{"status": "ok"}
+
+	// Convert the map to JSON and write it to the response
+	json.NewEncoder(w).Encode(response)
 }
