@@ -6,6 +6,15 @@ import (
 	"net/http"
 )
 
+const version = "1.0.0"
+
+// healthResponse is a struct that represents our JSON response.
+// The struct tags (e.g. `json:"status"`) tell the encoder to use lowercase keys in the JSON output.
+type healthResponse struct {
+	Status  string `json:"status"`
+	Version string `json:"version"`
+}
+
 // The entry point of the Go application.
 // This is where the program starts running.
 func main() {
@@ -29,8 +38,11 @@ func healthcheckHandler(w http.ResponseWriter, r *http.Request) {
 	// Tell the client that we're sending JSON back in the response
 	w.Header().Set("Content-Type", "application/json")
 
-	// Create a simple response object as a Go map
-	response := map[string]string{"status": "ok"}
+	// Create the response data using our struct and constant
+	response := healthResponse{
+		Status:  "ok",
+		Version: version,
+	}
 
 	// Convert the map to JSON and write it to the response
 	json.NewEncoder(w).Encode(response)
