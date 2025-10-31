@@ -23,6 +23,9 @@
 *.log
 *.tmp
 
+# Development scripts
+*.sh
+
 # Coverage and test files
 coverage.out
 
