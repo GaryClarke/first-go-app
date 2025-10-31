@@ -4,6 +4,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/garyclarke/first-go-app/internal/data"
+	"log"
 	"net/http"
 )
 
@@ -19,12 +20,22 @@ type healthResponse struct {
 // The entry point of the Go application.
 // This is where the program starts running.
 func main() {
+	// 1. Open a database connection.
+	db, err := data.OpenSQLite()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// 2. Close it cleanly when the app shuts down.
+	defer db.Close()
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /healthz", healthcheckHandler)
 	mux.HandleFunc("GET /books", listBooksHandler)
 
-	http.ListenAndServe(":8080", mux)
+	if err := http.ListenAndServe(":8080", mux); err != nil {
+		log.Fatal(err)
+	}
 }
 
 // healthcheckHandler handles incoming requests to /healthz.
