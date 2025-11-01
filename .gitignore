@@ -29,6 +29,11 @@
 # Coverage and test files
 coverage.out
 
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
 # Cursor AI development files
 CURSOR_RULES.md
 .cursorrules
