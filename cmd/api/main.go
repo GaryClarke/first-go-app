@@ -28,11 +28,20 @@ func main() {
 	// 2. Close it cleanly when the app shuts down.
 	defer db.Close()
 
+	// 3. Migrate and seed
+	if err := data.Migrate(db); err != nil {
+		log.Fatal(err)
+	}
+	if err := data.SeedIfEmpty(db); err != nil {
+		log.Fatal(err)
+	}
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /healthz", healthcheckHandler)
 	mux.HandleFunc("GET /books", listBooksHandler)
 
+	log.Println("starting server on :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatal(err)
 	}
