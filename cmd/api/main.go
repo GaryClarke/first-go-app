@@ -2,6 +2,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"github.com/garyclarke/first-go-app/internal/data"
 	"log"
@@ -9,6 +10,10 @@ import (
 )
 
 const version = "1.0.0"
+
+type App struct {
+	DB *sql.DB
+}
 
 // healthResponse is a struct that represents our JSON response.
 // The struct tags (e.g. `json:"status"`) tell the encoder to use lowercase keys in the JSON output.
