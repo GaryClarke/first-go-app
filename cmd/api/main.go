@@ -41,10 +41,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	app := &App{DB: db}
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /healthz", healthcheckHandler)
-	mux.HandleFunc("GET /books", listBooksHandler)
+	mux.HandleFunc("GET /books", app.listBooksHandler)
 
 	log.Println("starting server on :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
@@ -66,7 +68,7 @@ func healthcheckHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func listBooksHandler(w http.ResponseWriter, r *http.Request) {
+func (app *App) listBooksHandler(w http.ResponseWriter, r *http.Request) {
 	// Stub a slice of Books
 	books := []data.Book{
 		{ID: 1, Title: "The Go Programming Language", Author: "Alan Donovan", Year: 2015},
