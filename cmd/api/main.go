@@ -69,10 +69,10 @@ func healthcheckHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) listBooksHandler(w http.ResponseWriter, r *http.Request) {
-	// Stub a slice of Books
-	books := []data.Book{
-		{ID: 1, Title: "The Go Programming Language", Author: "Alan Donovan", Year: 2015},
-		{ID: 2, Title: "Designing Data-Intensive Applications", Author: "Martin Kleppmann", Year: 2017},
+	books, err := data.GetAll(app.DB)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 
 	// Write the books to the json response
