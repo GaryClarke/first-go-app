@@ -43,41 +43,9 @@ func main() {
 
 	app := &App{DB: db}
 
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("GET /healthz", healthcheckHandler)
-	mux.HandleFunc("GET /books", app.listBooksHandler)
-
 	log.Println("starting server on :8080")
-	if err := http.ListenAndServe(":8080", mux); err != nil {
+	if err := http.ListenAndServe(":8080", app.routes()); err != nil {
 		log.Fatal(err)
-	}
-}
-
-// healthcheckHandler handles incoming requests to /healthz.
-// It takes a http.ResponseWriter to write the response,
-// and a *http.Request which contains all the request data.
-func healthcheckHandler(w http.ResponseWriter, r *http.Request) {
-	response := healthResponse{
-		Status:  "ok",
-		Version: version,
-	}
-
-	if err := writeJSON(w, http.StatusOK, response); err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-	}
-}
-
-func (app *App) listBooksHandler(w http.ResponseWriter, r *http.Request) {
-	books, err := data.GetAll(app.DB)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	// Write the books to the json response
-	if err := writeJSON(w, http.StatusOK, books); err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
 
