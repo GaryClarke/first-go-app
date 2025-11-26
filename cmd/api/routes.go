@@ -7,6 +7,10 @@ import (
 	"github.com/garyclarke/first-go-app/internal/data"
 )
 
+type bookResponse struct {
+	Books []data.Book `json:"books"`
+}
+
 // routes defines the HTTP routes and returns an http.Handler.
 //
 // In Go, an http.Handler is any type that has a ServeHTTP() method.
@@ -42,8 +46,10 @@ func (app *App) listBooksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	resp := bookResponse{Books: books}
+
 	// Write the books to the json response
-	if err := writeJSON(w, http.StatusOK, books); err != nil {
+	if err := writeJSON(w, http.StatusOK, resp); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
