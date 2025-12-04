@@ -3,8 +3,10 @@ package main
 
 import (
 	"database/sql"
-
+	"encoding/json"
 	"github.com/garyclarke/first-go-app/internal/data"
+	"net/http"
+	"net/http/httptest"
 
 	// Blank import: registers the "sqlite" driver with database/sql
 	// The blank identifier (_) tells Go we're importing this package only for its side effect
@@ -57,4 +59,37 @@ func setupTestApp(t *testing.T) *App {
 	// Return a new App instance with the test database
 	// This is what our test handlers will use instead of the real database
 	return &App{DB: db}
+}
+
+func TestListBooksHandler(t *testing.T) {
+	// setup test
+	app := setupTestApp(t)
+
+	// create test request
+	req := httptest.NewRequest(http.MethodGet, "/books", nil)
+
+	// create test recorder
+	rr := httptest.NewRecorder()
+
+	// invoke the handler
+	app.listBooksHandler(rr, req)
+
+	// check status code
+	if rr.Code != http.StatusOK {
+		t.Errorf("want status code %d; got %d", http.StatusOK, rr.Code)
+	}
+
+	// create a bookResponse var
+	var resp bookResponse
+
+	// decode the response body into the booksResponse var
+	if err := json.NewDecoder(rr.Body).Decode(&resp); err != nil {
+		t.Fatal(err)
+	}
+
+	// check length of books
+	booksCount := len(resp.Books)
+	if booksCount != 2 {
+		t.Errorf("want books count of 2; got %d", booksCount)
+	}
 }
