@@ -45,11 +45,11 @@ func SeedIfEmpty(db *sql.DB) error {
 		return nil
 	}
 
-	// Insert two demo books.
+	// Insert with explicit IDs to simplify testing and demos
 	_, err = db.Exec(`
-INSERT INTO books (title, author, year) VALUES
-  ('The Go Programming Language', 'Alan Donovan', 2015),
-  ('Designing Data-Intensive Applications', 'Martin Kleppmann', 2017)`)
+INSERT INTO books (id, title, author, year) VALUES
+  (1, 'The Go Programming Language', 'Alan Donovan', 2015),
+  (2, 'Designing Data-Intensive Applications', 'Martin Kleppmann', 2017)`)
 
 	return err
 }

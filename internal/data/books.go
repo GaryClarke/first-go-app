@@ -7,6 +7,13 @@ import (
 	"time"
 )
 
+// BookStore wraps a sql.DB connection pool.
+// It provides methods for working with books in the database
+// (for example, fetching all books or looking up a book by ID).
+type BookStore struct {
+	DB *sql.DB
+}
+
 func GetAll(db *sql.DB) ([]Book, error) {
 	// Define the SQL query to fetch all books, ordered by ID
 	const query = `SELECT id, title, author, year FROM books ORDER BY id`
