@@ -14,7 +14,7 @@ type BookStore struct {
 	DB *sql.DB
 }
 
-func GetAll(db *sql.DB) ([]Book, error) {
+func (s *BookStore) GetAll() ([]Book, error) {
 	// Define the SQL query to fetch all books, ordered by ID
 	const query = `SELECT id, title, author, year FROM books ORDER BY id`
 
@@ -24,7 +24,7 @@ func GetAll(db *sql.DB) ([]Book, error) {
 	defer cancel()
 
 	// Execute the query using the context (will timeout after 3 seconds if not done)
-	rows, err := db.QueryContext(ctx, query)
+	rows, err := s.DB.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
