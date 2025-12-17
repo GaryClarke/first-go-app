@@ -11,6 +11,13 @@ type bookResponse struct {
 	Books []data.Book `json:"books"`
 }
 
+// healthResponse is a struct that represents our JSON response.
+// The struct tags (e.g. `json:"status"`) tell the encoder to use lowercase keys in the JSON output.
+type healthResponse struct {
+	Status  string `json:"status"`
+	Version string `json:"version"`
+}
+
 // routes defines the HTTP routes and returns an http.Handler.
 //
 // In Go, an http.Handler is any type that has a ServeHTTP() method.
@@ -40,7 +47,7 @@ func (app *App) healthcheckHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) listBooksHandler(w http.ResponseWriter, r *http.Request) {
-	books, err := data.GetAll(app.DB)
+	books, err := app.Stores.Books.GetAll()
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return

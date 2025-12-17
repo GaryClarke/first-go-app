@@ -2,7 +2,6 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"github.com/garyclarke/first-go-app/internal/data"
 	"log"
@@ -11,15 +10,13 @@ import (
 
 const version = "1.0.0"
 
+// App holds the dependencies for our HTTP handlers.
+// Instead of passing a raw *sql.DB around, we now store
+// a data.Stores value. This gives our handlers access to
+// all the application’s data stores (currently just Books)
+// through a single field.
 type App struct {
-	DB *sql.DB
-}
-
-// healthResponse is a struct that represents our JSON response.
-// The struct tags (e.g. `json:"status"`) tell the encoder to use lowercase keys in the JSON output.
-type healthResponse struct {
-	Status  string `json:"status"`
-	Version string `json:"version"`
+	Stores data.Stores
 }
 
 // The entry point of the Go application.
@@ -41,7 +38,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	app := &App{DB: db}
+	// Build our App with all its dependencies.
+	// For now this means the data stores, created from the DB connection.
+	app := &App{Stores: data.NewStores(db)}
 
 	log.Println("starting server on :8080")
 	if err := http.ListenAndServe(":8080", app.routes()); err != nil {
