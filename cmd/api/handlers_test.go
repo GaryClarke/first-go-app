@@ -58,7 +58,7 @@ func setupTestApp(t *testing.T) *App {
 
 	// Return a new App instance with the test database
 	// This is what our test handlers will use instead of the real database
-	return &App{DB: db}
+	return &App{Stores: data.NewStores(db)}
 }
 
 func TestListBooksHandler(t *testing.T) {
@@ -66,7 +66,7 @@ func TestListBooksHandler(t *testing.T) {
 	app := setupTestApp(t)
 
 	// create test request
-	req := httptest.NewRequest(http.MethodGet, "/books", nil)
+	req := httptest.NewRequest(http.MethodGet, "/books", http.NoBody)
 
 	// create test recorder
 	rr := httptest.NewRecorder()
