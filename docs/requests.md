@@ -8,3 +8,8 @@ curl -i -X GET http://localhost:8080/healthz
 ```bash
 curl -i -X GET http://localhost:8080/books
 ```
+
+### Get a book by id
+```bash
+curl -i -X GET http://localhost:8080/books/1
+```
