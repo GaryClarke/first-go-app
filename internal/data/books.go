@@ -54,3 +54,37 @@ func (s *BookStore) GetAll() ([]Book, error) {
 	// Return the slice of books and nil for no error
 	return books, nil
 }
+
+func (s *BookStore) Get(id int64) (*Book, error) {
+	// In SQLite, auto-incremented IDs start at 1.
+	// To avoid making a pointless database query,
+	// we immediately return sql.ErrNoRows if the ID is less than 1.
+	if id < 1 {
+		// we reuse sql.ErrNoRows, which is exactly what the database driver gives us when a query finds nothing.
+		// That way our handler only needs one simple check: was the error sql.ErrNoRows? If yes, return 404
+		return nil, sql.ErrNoRows
+	}
+
+	// create query const
+	const query = `SELECT id, title, author, year FROM books WHERE id = ?`
+
+	// timeout context
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	// Declare a Book struct to hold the data returned by the query.
+	var book Book
+
+	// Query and scan into book
+	err := s.DB.QueryRowContext(ctx, query, id).Scan(
+		&book.ID,
+		&book.Title,
+		&book.Author,
+		&book.Year,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &book, nil
+}
