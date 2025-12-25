@@ -2,6 +2,8 @@
 package main
 
 import (
+	"database/sql"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -75,13 +77,15 @@ func (app *App) showBookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// For now, we return a hard-coded book.
-	// Later we’ll replace this with a real database lookup.
-	book := data.Book{
-		ID:     id,
-		Title:  "Stub",
-		Author: "N/A",
-		Year:   0,
+	book, err := app.Stores.Books.Get(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			http.NotFound(w, r) // 404
+		default:
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
 	}
 
 	// Write the json response
