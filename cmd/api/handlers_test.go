@@ -93,3 +93,34 @@ func TestListBooksHandler(t *testing.T) {
 		t.Errorf("want books count of 2; got %d", booksCount)
 	}
 }
+
+func TestShowBookHandler(t *testing.T) {
+	// setup test
+	app := setupTestApp(t)
+
+	// create test request
+	req := httptest.NewRequest(http.MethodGet, "/books/1", http.NoBody)
+
+	// create test recorder
+	rr := httptest.NewRecorder()
+
+	// invoke the handler
+	app.showBookHandler(rr, req)
+
+	// check status code
+	if rr.Code != http.StatusOK { // 200
+		t.Errorf("want status code %d; got %d", http.StatusOK, rr.Code)
+	}
+
+	// create a book var
+	var book data.Book
+
+	// decode the response body into the book var
+	if err := json.NewDecoder(rr.Body).Decode(&book); err != nil {
+		t.Fatal(err)
+	}
+
+	// expected book
+
+	// check book against expected
+}
