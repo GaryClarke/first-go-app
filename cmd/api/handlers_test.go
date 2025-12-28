@@ -4,9 +4,10 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/garyclarke/first-go-app/internal/data"
 	"net/http"
 	"net/http/httptest"
+
+	"github.com/garyclarke/first-go-app/internal/data"
 
 	// Blank import: registers the "sqlite" driver with database/sql
 	// The blank identifier (_) tells Go we're importing this package only for its side effect
@@ -72,7 +73,7 @@ func TestListBooksHandler(t *testing.T) {
 	rr := httptest.NewRecorder()
 
 	// invoke the handler
-	app.listBooksHandler(rr, req)
+	app.routes().ServeHTTP(rr, req)
 
 	// check status code
 	if rr.Code != http.StatusOK {
@@ -104,8 +105,10 @@ func TestShowBookHandler(t *testing.T) {
 	// create test recorder
 	rr := httptest.NewRecorder()
 
-	// invoke the handler
-	app.showBookHandler(rr, req)
+	// send the request through the router
+	// We’re updating our tests to send requests through the router, just like real HTTP traffic would.
+	// This ensures path parameters like {id} are parsed correctly, and keeps all of our handler tests consistent.
+	app.routes().ServeHTTP(rr, req)
 
 	// check status code
 	if rr.Code != http.StatusOK { // 200
@@ -121,6 +124,15 @@ func TestShowBookHandler(t *testing.T) {
 	}
 
 	// expected book
+	expected := data.Book{
+		ID:     1,
+		Title:  "The Go Programming Language",
+		Author: "Alan Donovan",
+		Year:   2015,
+	}
 
 	// check book against expected
+	if book != expected {
+		t.Errorf("want %#v; got %#v", expected, book)
+	}
 }
