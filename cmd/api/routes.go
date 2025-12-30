@@ -107,6 +107,15 @@ func (app *App) createBookHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Step 4: Create a Book struct with the validated data.
 	// For now, we'll hard-code a fake book to simulate this.
+	book := &data.Book{
+		ID:     3, // fake ID
+		Title:  "The Go Workshop",
+		Author: "Delio D'Anna",
+		Year:   2021,
+	}
 
 	// Step 5: Return the created book as JSON with a 201 Created status.
+	if err := writeJSON(w, http.StatusCreated, book); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
 }
