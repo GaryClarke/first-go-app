@@ -36,6 +36,7 @@ func (app *App) routes() http.Handler {
 	mux.HandleFunc("GET /healthz", app.healthcheckHandler)
 	mux.HandleFunc("GET /books", app.listBooksHandler)
 	mux.HandleFunc("GET /books/{id}", app.showBookHandler)
+	mux.HandleFunc("POST /books", app.createBookHandler)
 	return mux
 }
 
@@ -92,4 +93,20 @@ func (app *App) showBookHandler(w http.ResponseWriter, r *http.Request) {
 	if err := writeJSON(w, http.StatusOK, book); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
+}
+
+func (app *App) createBookHandler(w http.ResponseWriter, r *http.Request) {
+	// Step 1: Declare an input struct to hold the incoming JSON data.
+	// We'll decode the request body into this in a later lesson.
+
+	// Step 2: Decode the request body into the input struct.
+	// We'll add this in the next branch.
+
+	// Step 3: Validate the input data.
+	// Coming soon: title required, year in range, etc.
+
+	// Step 4: Create a Book struct with the validated data.
+	// For now, we'll hard-code a fake book to simulate this.
+
+	// Step 5: Return the created book as JSON with a 201 Created status.
 }
