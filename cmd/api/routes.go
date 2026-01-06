@@ -3,6 +3,7 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"github.com/garyclarke/first-go-app/internal/request"
 	"net/http"
@@ -98,11 +99,13 @@ func (app *App) showBookHandler(w http.ResponseWriter, r *http.Request) {
 
 func (app *App) createBookHandler(w http.ResponseWriter, r *http.Request) {
 	// Step 1: Declare an input struct to hold the incoming JSON data.
-	// We'll decode the request body into this in a later lesson.
 	var input request.FullBookRequest
 
 	// Step 2: Decode the request body into the input struct.
-	// We'll add this in the next branch.
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
 
 	// Step 3: Validate the input data.
 	// Coming soon: title required, year in range, etc.
