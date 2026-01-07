@@ -18,5 +18,5 @@ curl -i -X GET http://localhost:8080/books/999
 ```bash
 curl -i -X POST http://localhost:8080/books \
   -H "Content-Type: application/json" \
-  -d '{"title":"The Go Workshop","author":"Delio D'\''Anna","year":2021}'
+  -d '{"title":"The Go Workshop","author":"Delio D'\''Anna","year":0}'
 ```

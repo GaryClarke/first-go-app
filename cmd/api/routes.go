@@ -99,16 +99,21 @@ func (app *App) showBookHandler(w http.ResponseWriter, r *http.Request) {
 
 func (app *App) createBookHandler(w http.ResponseWriter, r *http.Request) {
 	// Step 1: Declare an input struct to hold the incoming JSON data.
-	var input request.FullBookRequest
+	var br request.FullBookRequest
 
-	// Step 2: Decode the request body into the input struct.
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+	// Step 2: Decode the request body into the br struct.
+	if err := json.NewDecoder(r.Body).Decode(&br); err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
 	// Step 3: Validate the input data.
 	// Coming soon: title required, year in range, etc.
+	validationErrors := request.ValidateFullBookRequest(&br)
+	if len(validationErrors) > 0 {
+		writeJSON(w, http.StatusUnprocessableEntity, map[string]any{"errors": validationErrors})
+		return
+	}
 
 	// Step 4: Create a Book struct with the validated data.
 	// For now, we'll hard-code a fake book to simulate this.
