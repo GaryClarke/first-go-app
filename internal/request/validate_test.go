@@ -19,3 +19,26 @@ func TestValidateFullBookRequest_ValidInput(t *testing.T) {
 		t.Errorf("expected no validation errors, got %d: %v", len(errors), errors)
 	}
 }
+
+func TestValidateFullBookRequest_InvalidInput(t *testing.T) {
+	// Table-driven tests: we define a list (slice) of test cases to loop over.
+	tests := []struct {
+		name     string          // A short label for the test case
+		br       FullBookRequest // The input data to validate
+		wantKeys []string        // The expected error keys we should get back
+	}{
+		{
+			name:     "missing all fields",
+			br:       FullBookRequest{},
+			wantKeys: []string{"title", "author", "year"},
+		},
+		{
+			name: "missing title",
+			br: FullBookRequest{
+				Author: "Valid Author", // Valid author
+				Year:   1999,           // Valid year
+			},
+			wantKeys: []string{"title"}, // Only title should fail validation
+		},
+	}
+}
