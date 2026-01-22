@@ -41,4 +41,25 @@ func TestValidateFullBookRequest_InvalidInput(t *testing.T) {
 			wantKeys: []string{"title"}, // Only title should fail validation
 		},
 	}
+
+	// loop over the test cases, tc is the current test case
+	for _, tc := range tests {
+		// Run the test case (tc)
+		t.Run(tc.name, func(t *testing.T) {
+			// Call ValidateFullBookRequest
+			errors := ValidateFullBookRequest(&tc.br)
+
+			// Compare the length of the actual vs expected errors
+			if len(errors) != len(tc.wantKeys) {
+				t.Errorf("%s: expected %d validation errors; got %d", tc.name, len(tc.wantKeys), len(errors))
+			}
+
+			// Check if all expected keys exist in the error map
+			for _, key := range tc.wantKeys {
+				if _, ok := errors[key]; !ok {
+					t.Errorf("%s: expected error for %s but is missing", tc.name, key)
+				}
+			}
+		})
+	}
 }
