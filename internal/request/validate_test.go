@@ -40,6 +40,14 @@ func TestValidateFullBookRequest_InvalidInput(t *testing.T) {
 			},
 			wantKeys: []string{"title"}, // Only title should fail validation
 		},
+		{
+			name: "missing author",
+			br: FullBookRequest{
+				Title: "Test Title", // Valid title
+				Year:  1999,         // Valid year
+			},
+			wantKeys: []string{"author"}, // Only author should fail validation
+		},
 	}
 
 	// loop over the test cases, tc is the current test case
