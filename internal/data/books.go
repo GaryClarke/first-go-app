@@ -16,7 +16,7 @@ type BookStore struct {
 
 func (s *BookStore) GetAll() ([]Book, error) {
 	// Define the SQL query to fetch all books, ordered by ID
-	const query = `SELECT id, title, author, year FROM books ORDER BY id`
+	query := `SELECT id, title, author, year FROM books ORDER BY id`
 
 	// Create a context with a 3-second timeout to prevent long-running queries
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -65,8 +65,7 @@ func (s *BookStore) Get(id int64) (*Book, error) {
 		return nil, sql.ErrNoRows
 	}
 
-	// create query const
-	const query = `SELECT id, title, author, year FROM books WHERE id = ?`
+	query := `SELECT id, title, author, year FROM books WHERE id = ?`
 
 	// timeout context
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -87,4 +86,26 @@ func (s *BookStore) Get(id int64) (*Book, error) {
 	}
 
 	return &book, nil
+}
+
+func (s *BookStore) Insert(book *Book) (*Book, error) {
+	// query
+	query := `INSERT INTO books (title, author, year) VALUES (?, ?, ?)`
+	// timeout context
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	// execute query
+	res, err := s.DB.ExecContext(ctx, query, book.Title, book.Author, book.Year)
+	if err != nil {
+		return nil, err
+	}
+	// get the id
+	id, err := res.LastInsertId()
+	if err != nil {
+		return nil, err
+	}
+	// set id on book
+	book.ID = id
+	// return the book
+	return book, nil
 }
