@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/garyclarke/first-go-app/internal/request"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -122,9 +123,15 @@ func (app *App) createBookHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Step 5: Save the book to the DB
+	savedBook, err := app.Stores.Books.Insert(book)
+	if err != nil {
+		log.Printf("failed to insert book: %v", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
 
 	// Step 6: Return the created book as JSON with a 201 Created status.
-	if err := writeJSON(w, http.StatusCreated, book); err != nil {
+	if err := writeJSON(w, http.StatusCreated, savedBook); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }

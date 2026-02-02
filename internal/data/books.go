@@ -4,6 +4,7 @@ package data
 import (
 	"context"
 	"database/sql"
+	"log"
 	"time"
 )
 
@@ -106,6 +107,8 @@ func (s *BookStore) Insert(book *Book) (*Book, error) {
 	}
 	// set id on book
 	book.ID = id
+
+	log.Printf("Inserted book: %+v", book)
 	// return the book
 	return book, nil
 }
