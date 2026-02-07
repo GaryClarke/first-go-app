@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 
 	"github.com/garyclarke/first-go-app/internal/data"
 
@@ -134,5 +135,58 @@ func TestShowBookHandler(t *testing.T) {
 	// check book against expected
 	if book != expected {
 		t.Errorf("want %#v; got %#v", expected, book)
+	}
+}
+
+func TestCreateBookHandler_ValidInput(t *testing.T) {
+	// Setup
+	app := setupTestApp(t)
+
+	// Create a JSON payload as a raw string.
+	// The handler reads the request body via an io.Reader (e.g. when decoding JSON).
+	// strings.NewReader wraps our string, so it can be read the same way: it implements io.Reader.
+	// So we're not sending a real HTTP request; we're just giving the handler something that
+	// behaves like a body (readable bytes) so we can test it without a real server or network.
+	body := strings.NewReader(`{
+		"title":"Testing Go",
+		"author":"Gary Clarke",
+		"year":2030
+	}`)
+
+	// Make POST request with valid JSON
+	req := httptest.NewRequest(http.MethodPost, "/books", body)
+
+	// It's important to set the Content-Type header so the server knows to treat the body as JSON.
+	req.Header.Set("Content-Type", "application/json")
+
+	// Create a test response recorder — this captures the response that would be sent to a client.
+	rr := httptest.NewRecorder()
+
+	// Route the request through our app’s router, just like the real server would.
+	app.routes().ServeHTTP(rr, req)
+
+	// Assert: 201 status, correct JSON response
+	if rr.Code != http.StatusCreated {
+		t.Errorf("want status code %d; got %d", http.StatusCreated, rr.Code)
+	}
+
+	// decode the response body into the book var
+	var book data.Book
+
+	if err := json.NewDecoder(rr.Body).Decode(&book); err != nil {
+		t.Fatal(err)
+	}
+
+	if book.ID < 1 {
+		t.Errorf("expected book to have a positive value ID")
+	}
+	if book.Title != "Testing Go" {
+		t.Errorf("expected title to be 'Testing Go'; got %q", book.Title)
+	}
+	if book.Author != "Gary Clarke" {
+		t.Errorf("expected author to be 'Gary Clarke'; got %q", book.Author)
+	}
+	if book.Year != 2030 {
+		t.Errorf("expected year to be 2030; got %d", book.Year)
 	}
 }
