@@ -189,4 +189,18 @@ func TestCreateBookHandler_ValidInput(t *testing.T) {
 	if book.Year != 2030 {
 		t.Errorf("expected year to be 2030; got %d", book.Year)
 	}
+
+	// Verify book exists in the DB
+	stored, err := app.Stores.Books.Get(book.ID)
+	if err != nil {
+		t.Fatalf("failed to fetch book from DB: %v", err)
+	}
+
+	// verify stored book matches returned book
+	// stored is a *Book (a pointer), but book is a value.
+	// To compare them properly, we dereference stored using *stored
+	// so we’re comparing two Book values directly.
+	if *stored != book {
+		t.Errorf("book in DB does not match response. got: %#v", stored)
+	}
 }
