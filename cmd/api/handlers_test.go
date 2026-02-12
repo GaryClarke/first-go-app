@@ -204,3 +204,65 @@ func TestCreateBookHandler_ValidInput(t *testing.T) {
 		t.Errorf("book in DB does not match response. got: %#v", stored)
 	}
 }
+
+func TestCreateBookHandler_InvalidInput(t *testing.T) {
+	tests := []struct {
+		name     string
+		payload  string
+		wantCode int
+		wantKeys []string // expected keys in the "errors" object of the response
+	}{
+		{
+			name:     "missing all fields",
+			payload:  `{}`,
+			wantCode: http.StatusUnprocessableEntity,
+			wantKeys: []string{"title", "author", "year"},
+		},
+		{
+			name:     "missing title",
+			payload:  `{"author": "Gary", "year": 2023}`,
+			wantCode: http.StatusUnprocessableEntity,
+			wantKeys: []string{"title"},
+		},
+		{
+			name:     "missing author",
+			payload:  `{"title": "Testing Go", "year": 2023}`,
+			wantCode: http.StatusUnprocessableEntity,
+			wantKeys: []string{"author"},
+		},
+		{
+			name:     "invalid year (zero)",
+			payload:  `{"title": "Testing Go", "author": "Gary", "year": 0}`,
+			wantCode: http.StatusUnprocessableEntity,
+			wantKeys: []string{"year"},
+		},
+		{
+			name:     "invalid JSON format",
+			payload:  `{`,
+			wantCode: http.StatusBadRequest,
+			wantKeys: nil, // No "errors" object expected — it's a decoding error
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			// Step 1: Setup a fresh in-memory app
+			// app := setupTestApp(t)
+
+			// Step 2: Create a request using tc.payload as the body
+			// req := httptest.NewRequest(...)
+
+			// Step 3: Set the Content-Type header to application/json
+
+			// Step 4: Create a response recorder
+
+			// Step 5: Send the request through the app router
+
+			// Step 6: Assert that the status code matches tc.wantCode
+
+			// Step 7: If tc.wantKeys is not nil,
+			//         decode the response JSON into a map[string]any
+			//         and check that all expected error keys exist
+		})
+	}
+}
