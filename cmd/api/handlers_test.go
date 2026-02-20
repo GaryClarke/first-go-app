@@ -247,22 +247,49 @@ func TestCreateBookHandler_InvalidInput(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			// Step 1: Setup a fresh in-memory app
-			// app := setupTestApp(t)
+			app := setupTestApp(t)
 
 			// Step 2: Create a request using tc.payload as the body
-			// req := httptest.NewRequest(...)
+			body := strings.NewReader(tc.payload)
+
+			req := httptest.NewRequest(http.MethodPost, "/books", body)
 
 			// Step 3: Set the Content-Type header to application/json
+			req.Header.Set("Content-Type", "application/json")
 
 			// Step 4: Create a response recorder
+			rr := httptest.NewRecorder()
 
 			// Step 5: Send the request through the app router
+			app.routes().ServeHTTP(rr, req)
 
 			// Step 6: Assert that the status code matches tc.wantCode
+			if rr.Code != tc.wantCode {
+				t.Errorf("want status code %d; got %d", tc.wantCode, rr.Code)
+			}
 
 			// Step 7: If tc.wantKeys is not nil,
 			//         decode the response JSON into a map[string]any
 			//         and check that all expected error keys exist
+			if tc.wantKeys != nil {
+				var resp map[string]any
+				err := json.NewDecoder(rr.Body).Decode(&resp)
+				if err != nil {
+					t.Fatal(err)
+				}
+				// Assert that "errors" field exists and is a map[string]any
+				errorsMap, ok := resp["errors"].(map[string]any)
+				if !ok {
+					t.Fatalf("expected 'errors' field in response, got: %#v", resp)
+				}
+
+				// Check that all expected error keys exist
+				for _, key := range tc.wantKeys {
+					if _, ok := errorsMap[key]; !ok {
+						t.Errorf("expected error for key %q in response", key)
+					}
+				}
+			}
 		})
 	}
 }
