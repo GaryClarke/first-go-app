@@ -40,6 +40,7 @@ func (app *App) routes() http.Handler {
 	mux.HandleFunc("GET /books", app.listBooksHandler)
 	mux.HandleFunc("GET /books/{id}", app.showBookHandler)
 	mux.HandleFunc("POST /books", app.createBookHandler)
+	mux.HandleFunc("PUT /books/{id}", app.putBookHandler)
 	return mux
 }
 
@@ -134,4 +135,20 @@ func (app *App) createBookHandler(w http.ResponseWriter, r *http.Request) {
 	if err := writeJSON(w, http.StatusCreated, savedBook); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
+}
+
+func (app *App) putBookHandler(w http.ResponseWriter, r *http.Request) {
+	// Step 1: Parse the book ID from the route
+
+	// Step 2: Decode the request body into a FullBookRequest
+
+	// Step 3: Validate the input
+
+	// Step 4: Retrieve the existing book
+
+	// Step 5: Replace all fields on the book
+
+	// Step 6: Save the updated book to the DB
+
+	// Step 7: Return the updated book as JSON
 }
