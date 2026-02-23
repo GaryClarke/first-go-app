@@ -139,16 +139,49 @@ func (app *App) createBookHandler(w http.ResponseWriter, r *http.Request) {
 
 func (app *App) putBookHandler(w http.ResponseWriter, r *http.Request) {
 	// Step 1: Parse the book ID from the route
+	idPath := r.PathValue("id")
+	id, err := strconv.ParseInt(idPath, 10, 64)
+	if err != nil || id < 1 {
+		http.NotFound(w, r)
+		return
+	}
 
 	// Step 2: Decode the request body into a FullBookRequest
+	var br request.FullBookRequest
+	if err := json.NewDecoder(r.Body).Decode(&br); err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
 
 	// Step 3: Validate the input
+	validationErrors := request.ValidateFullBookRequest(&br)
+	if len(validationErrors) > 0 {
+		writeJSON(w, http.StatusUnprocessableEntity, map[string]any{"errors": validationErrors})
+		return
+	}
 
 	// Step 4: Retrieve the existing book
+	book, err := app.Stores.Books.Get(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			http.NotFound(w, r)
+		default:
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
 
 	// Step 5: Replace all fields on the book
+	book.Title = br.Title
+	book.Author = br.Author
+	book.Year = br.Year
 
 	// Step 6: Save the updated book to the DB
+	updatedBook := book
 
-	// Step 7: Return the updated book as JSON
+	// Step 7: Return the updated book as JSON with a 200 OK status.
+	if err := writeJSON(w, http.StatusOK, updatedBook); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
 }
