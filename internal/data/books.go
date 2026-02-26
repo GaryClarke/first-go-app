@@ -118,9 +118,13 @@ func (s *BookStore) Update(book *Book) (*Book, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	_, err := s.DB.ExecContext(ctx, query, book.Title, book.Author, book.Year, book.ID)
+	res, err := s.DB.ExecContext(ctx, query, book.Title, book.Author, book.Year, book.ID)
 	if err != nil {
 		return nil, err
+	}
+	rows, _ := res.RowsAffected()
+	if rows == 0 {
+		return nil, sql.ErrNoRows
 	}
 	return book, nil
 }

@@ -20,3 +20,10 @@ curl -i -X POST http://localhost:8080/books \
   -H "Content-Type: application/json" \
   -d '{"title":"The Go Workshop","author":"Delio D'\''Anna","year":2021}'
 ```
+
+### Update a book
+```bash
+curl -i -X PUT http://localhost:8080/books/99 \
+  -H "Content-Type: application/json" \
+  -d '{"title":"The Go Workshop","author":"Delio D'\''Anna","year":2022}'
+```

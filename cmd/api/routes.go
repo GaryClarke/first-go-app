@@ -178,7 +178,17 @@ func (app *App) putBookHandler(w http.ResponseWriter, r *http.Request) {
 	book.Year = br.Year
 
 	// Step 6: Save the updated book to the DB
-	updatedBook := book
+	updatedBook, err := app.Stores.Books.Update(book)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			http.NotFound(w, r)
+		default:
+			log.Printf("failed to update book: %v", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
 
 	// Step 7: Return the updated book as JSON with a 200 OK status.
 	if err := writeJSON(w, http.StatusOK, updatedBook); err != nil {
